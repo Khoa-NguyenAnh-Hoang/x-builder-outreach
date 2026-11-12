@@ -75,8 +75,8 @@ def render_candidates_tab(conn, settings: Settings) -> None:
 
 def _render_prospect_header(detail) -> None:
     p = detail["prospect"]
-    st.subheader(p.get("display_name") or f"@{p.get('username')}" or p["x_user_id"])
     handle = f"@{p['username']}" if p.get("username") else p["x_user_id"]
+    st.subheader(p.get("display_name") or handle)
     st.caption(
         f"{handle} · X user id {p['x_user_id']} · source: {p['source']}"
         + (f" ({p['source_query']})" if p.get("source_query") else "")
@@ -127,8 +127,7 @@ def _render_consent_panel(conn, detail) -> None:
         if st.button("Mark opted out", key=f"optout_{pid}"):
             workflows.mark_opt_out(conn, pid)
             st.rerun()
-    with col2:
-        with st.form(f"consent_{pid}"):
+    with col2, st.form(f"consent_{pid}"):
             source = st.text_input("Consent source (who asked for a DM, where)", key=f"csrc_{pid}")
             evidence_url = st.text_input("Evidence URL (the public place they said it)", key=f"curl_{pid}")
             verify_now = st.checkbox("Verify now (operator name required)", key=f"cver_{pid}")
@@ -253,7 +252,7 @@ def _render_draft_panel(conn, detail, settings: Settings) -> None:
         st.caption("Grounded claims: " + " · ".join(
             f"[evidence {r['evidence_id']}] \"{r['claim']}\"" for r in refs))
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, _ = st.columns(3)
     with col1:
         if st.button("Save edit", key=f"save_{latest['id']}") and edited != latest["text"]:
             workflows.save_draft_edit(conn, latest["id"], edited)

@@ -5,7 +5,7 @@ evaluate_send_eligibility. The UI renders its output; it never overrides it.
 """
 
 import sqlite3
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from pydantic import BaseModel
 
@@ -160,7 +160,7 @@ def evaluate_send_eligibility(
     """The single send gate (design doc A3). Order matters: opt-out first, always."""
     if mode not in MODES:
         raise ValueError(f"mode must be one of {MODES}")
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     state = get_consent_state(conn, prospect_id)
     checks: list[EligibilityCheck] = []
 

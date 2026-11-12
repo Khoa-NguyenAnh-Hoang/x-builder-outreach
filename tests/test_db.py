@@ -3,8 +3,7 @@ import sqlite3
 
 import pytest
 
-from src.db import connect, init_db
-from src.db import store
+from src.db import connect, init_db, store
 from src.models import ConsentRecord, DMEvent, Draft, Evidence, Prospect, Qualification
 
 
@@ -50,7 +49,7 @@ def test_init_db_rejects_newer_schema():
 # --- prospects ------------------------------------------------------------
 
 def test_prospect_upsert_update_and_read(conn):
-    pid = store.upsert_prospect(conn, _prospect(bio="old bio"))
+    store.upsert_prospect(conn, _prospect(bio="old bio"))
     row = store.get_prospect_by_x_user_id(conn, "12345")
     first_seen = row["first_seen_at"]
     assert row["bio"] == "old bio"
@@ -176,3 +175,21 @@ def test_draft_status_transitions(conn):
     store.set_draft_status(conn, did, "approved", approved_at="2026-11-11T00:00:00Z")
     row = conn.execute("SELECT status, approved_at FROM drafts WHERE id = ?", (did,)).fetchone()
     assert row["status"] == "approved" and row["approved_at"] is not None
+
+
+# --- competing send attempts across connections (T16: concurrency) -----------
+
+def test_competing_send_attempts_serialize_across_connections(tmp_path):
+    """SQLite serializes writers and the partial unique index is the gate: of two
+    concurrent send-intents for one recipient, exactly one may exist (invariant I7)."""
+    db = tmp_path / "outreach.db"
+    conn1, conn2 = connect(db), connect(db)
+    init_db(conn1)
+    init_db(conn2)  # repeatable, no-op at current version
+    pid = store.upsert_prospect(conn1, _prospect())
+    did = _draft(conn1, pid)
+
+    store.create_send_intent(conn1, pid, did, "operator_approved")
+    with pytest.raises(sqlite3.IntegrityError):  # the racing second writer loses
+        store.create_send_intent(conn2, pid, did, "operator_approved")
+    assert conn1.execute("SELECT COUNT(*) FROM outreach_attempts").fetchone()[0] == 1

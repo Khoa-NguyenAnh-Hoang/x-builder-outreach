@@ -10,7 +10,6 @@ from typing import Protocol, runtime_checkable
 
 from pydantic import BaseModel
 
-
 # --- exception hierarchy: one type per documented failure mode ---
 
 class XClientError(Exception):

@@ -1,10 +1,8 @@
-import sqlite3
 
 import pytest
 
 from src.config import Settings
-from src.db import connect, init_db
-from src.db import store
+from src.db import connect, init_db, store
 from src.models import Prospect
 from src.services.consent import (
     ConsentState,

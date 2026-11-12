@@ -13,8 +13,25 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
+    "ruff>=0.17.4",
 ]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+# Live X API tests are opt-in only: they need credentials, the user's GO (D1/D2),
+# and consenting recipients. Default suite is fully mocked — never touches the network.
+addopts = "-m 'not live'"
+markers = [
+    "live: real X API test — explicit opt-in with -m live; sends only to own/consenting accounts",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# BLE001 (blind except) is used deliberately in two guarded spots — drafting's LLM
+# fallback (any provider failure must fall back to the deterministic path) and the
+# UI's consent error display; each carries a noqa with the reason inline.
+# C408: dict(k=v, ...) builders feed constructor kwargs; keyword form reads clearer.
+ignore = ["BLE001", "C408"]
 

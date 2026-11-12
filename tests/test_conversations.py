@@ -1,7 +1,6 @@
 import pytest
 
-from src.db import connect, init_db
-from src.db import store
+from src.db import connect, init_db, store
 from src.integrations.fake_x_client import FakeXClient
 from src.integrations.x_client import DMEventPayload, EndpointUnavailable
 from src.models import Draft, Prospect

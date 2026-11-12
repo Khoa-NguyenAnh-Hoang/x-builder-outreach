@@ -12,8 +12,6 @@ from pydantic import BaseModel, Field, field_validator
 
 from src.db import store
 from src.integrations.x_client import (
-    AuthenticationError,
-    EndpointUnavailable,
     Page,
     Post,
     Profile,
@@ -92,10 +90,8 @@ def run_discovery(conn: sqlite3.Connection, client: XClient, q: DiscoveryQuery) 
 
     # 1. Seeds: username lookup -> candidates (source="seed")
     if q.seeds:
-        try:
-            profiles = client.get_users_by_usernames(q.seeds)
-        except (AuthenticationError, EndpointUnavailable):
-            raise  # actionable at the UI layer
+        # AuthenticationError/EndpointUnavailable propagate — actionable at the UI layer
+        profiles = client.get_users_by_usernames(q.seeds)
         found = {p.username.lower(): p for p in profiles if p.username}
         for seed in q.seeds:
             profile = found.get(seed.lower())
@@ -113,10 +109,8 @@ def run_discovery(conn: sqlite3.Connection, client: XClient, q: DiscoveryQuery) 
                 author_ids.append(post.author_id)
         for chunk_start in range(0, len(author_ids), LOOKUP_CHUNK):
             chunk = author_ids[chunk_start:chunk_start + LOOKUP_CHUNK]
-            try:
-                profiles = client.get_users(chunk)
-            except (AuthenticationError, EndpointUnavailable):
-                raise
+            # AuthenticationError/EndpointUnavailable propagate — actionable at the UI layer
+            profiles = client.get_users(chunk)
             by_id = {p.id: p for p in profiles}
             for author_id in author_ids:
                 profile = by_id.get(author_id)

@@ -1,4 +1,3 @@
-import sqlite3
 
 import pytest
 from pydantic import ValidationError
@@ -76,7 +75,7 @@ def test_pagination_is_bounded(conn):
         Page(data=[Post(id="p3", author_id="300", text="c")], next_token=None),
     ]
     client = _client(search_pages=list(pages))
-    run = run_discovery(conn, client, DiscoveryQuery(queries=["ai"], max_pages=2))
+    run_discovery(conn, client, DiscoveryQuery(queries=["ai"], max_pages=2))
     assert len(client.search_calls) == 2  # stopped at the bound despite next_token="t2"
     # page 3's author never became a candidate
     assert conn.execute("SELECT COUNT(*) FROM prospects").fetchone()[0] == 2

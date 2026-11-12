@@ -1,10 +1,9 @@
 import pytest
 
-from src.db import connect, init_db
-from src.db import store
+from src.db import connect, init_db, store
 from src.models import Draft, Prospect
-from src.services.conversations import record_manual_reply
 from src.services.consent import mark_opt_out
+from src.services.conversations import record_manual_reply
 from src.services.dashboard import dashboard_data
 
 

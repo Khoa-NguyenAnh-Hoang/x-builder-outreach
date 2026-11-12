@@ -7,7 +7,7 @@ Missing evidence lowers confidence and is reported as unknown; nothing is inferr
 
 import re
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from src.db import store
 from src.integrations.x_client import Post, Profile
@@ -47,8 +47,8 @@ def _freshness(posts: list[Post]) -> tuple[float, str]:
     if not created:
         # Unknown is not scored: freshness of nothing is 0, never a guess.
         return 0.0, "no dated post evidence — freshness unknown (not inferred)"
-    newest = max(datetime.fromisoformat(c.replace("Z", "+00:00")) for c in created)
-    age_days = (datetime.now(timezone.utc) - newest).days
+    newest = max(datetime.fromisoformat(c) for c in created)
+    age_days = (datetime.now(UTC) - newest).days
     if age_days <= 7:
         return 1.0, f"newest post is {age_days}d old"
     if age_days <= 30:

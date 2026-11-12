@@ -14,11 +14,14 @@ from src.config import Settings
 from src.db import store
 from src.integrations.x_client import XClient, XClientError
 from src.services.consent import (
-    ConsentState,
     EligibilityDecision,
     evaluate_send_eligibility,
     get_consent_state,
+)
+from src.services.consent import (
     mark_opt_out as _mark_opt_out,
+)
+from src.services.consent import (
     record_consent as _record_consent,
 )
 from src.services.dashboard import dashboard_data

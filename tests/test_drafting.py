@@ -2,12 +2,11 @@ import json
 
 import pytest
 
-from src.db import connect, init_db
-from src.db import store
-from src.integrations.llm_client import CandidateContext, ClaimRef, DraftProposal, FakeLLMClient
+from src.db import connect, init_db, store
+from src.integrations.llm_client import ClaimRef, DraftProposal, FakeLLMClient
 from src.services.drafting import (
-    NoGroundedEvidenceError,
     SNIPPET_LIMIT,
+    NoGroundedEvidenceError,
     generate_draft,
 )
 

@@ -1,13 +1,10 @@
 import pytest
 
 from src.config import Settings
-from src.db import connect, init_db
-from src.db import store
+from src.db import connect, init_db, store
 from src.integrations.fake_x_client import FakeXClient
 from src.integrations.x_client import AuthenticationError, Post, Profile
-from src.services.drafting import NoGroundedEvidenceError
 from src.ui import workflows
-from src.ui.fixtures import offline_client
 
 
 @pytest.fixture
@@ -85,7 +82,6 @@ def test_load_candidate_detail_includes_evidence_and_consent(conn):
     assert len(detail["evidence"]) == 2
     assert {e["source_type"] for e in detail["evidence"]} == {"profile", "post"}
     assert detail["consent_state"].consent == "none"
-    assert isinstance(detail["consent_state"], workflows.ConsentState)
 
 
 def test_load_candidate_detail_unknown_id(conn):

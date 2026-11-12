@@ -2,13 +2,13 @@
 
 import json
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from src.models import ConsentRecord, Draft, DMEvent, Evidence, Prospect, Qualification
+from src.models import ConsentRecord, DMEvent, Draft, Evidence, Prospect, Qualification
 
 
 def now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def upsert_prospect(conn: sqlite3.Connection, p: Prospect) -> int:

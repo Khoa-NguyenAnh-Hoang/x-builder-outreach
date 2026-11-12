@@ -11,7 +11,7 @@ The UI labels which mode is active and never claims real-time monitoring.
 """
 
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from src.db import store
@@ -42,7 +42,7 @@ def record_manual_reply(conn: sqlite3.Connection, prospect_id: int,
         event_type="MessageCreate",
         sender_x_user_id=prospect["x_user_id"],
         text=text,
-        occurred_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        occurred_at=datetime.now(UTC).isoformat(timespec="seconds"),
     ))
 
 
