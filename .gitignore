@@ -20,3 +20,6 @@ uv.lock.bak
 # OS
 .DS_Store
 Thumbs.db
+
+# Local app data
+/data/

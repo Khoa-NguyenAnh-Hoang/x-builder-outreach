@@ -148,6 +148,12 @@ def set_draft_status(
     conn.commit()
 
 
+def update_draft_text(conn: sqlite3.Connection, draft_id: int, text: str) -> None:
+    """Operator edit during review (T12). Approval binds to the text as approved."""
+    conn.execute("UPDATE drafts SET text = ? WHERE id = ?", (text, draft_id))
+    conn.commit()
+
+
 def create_send_intent(
     conn: sqlite3.Connection, prospect_id: int, draft_id: int, mode: str
 ) -> int:

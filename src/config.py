@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     send_cap_15min: int = 10
     send_cap_24h: int = 40
 
+    # Comma-separated X user IDs allowed as dev/test recipients (policy I4).
+    test_recipient_allowlist: str = ""
+
     @model_validator(mode="after")
     def _caps_within_x_limits(self) -> "Settings":
         if not (0 < self.send_cap_15min <= 15):
@@ -48,6 +51,9 @@ class Settings(BaseSettings):
 
     def missing_credentials(self) -> list[str]:
         return [name for name, ok in self.credentials_status().items() if not ok]
+
+    def test_allowlist_ids(self) -> set[str]:
+        return {v.strip() for v in self.test_recipient_allowlist.split(",") if v.strip()}
 
     def secret_values(self) -> tuple[str, ...]:
         """Values the logging redaction filter must scrub from any output (I9)."""
