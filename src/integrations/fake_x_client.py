@@ -26,16 +26,19 @@ class FakeXClient:
         send_results: list[SendResult] | None = None,
         dm_events: list[DMEventPayload] | None = None,
         unavailable: set[str] | None = None,
+        search_pages: list[Page] | None = None,
     ):
         self._posts = list(posts or [])
         self._profiles = list(profiles or [])
         self._send_results = list(send_results or [])
         self._dm_events = list(dm_events or [])
         self._unavailable = set(unavailable or ())
+        self._search_pages = list(search_pages) if search_pages is not None else None
         self._errors: dict[str, list[Exception]] = {}
         # call recording: later tests assert services call the boundary correctly
         self.search_calls: list[dict] = []
         self.get_users_calls: list[list[str]] = []
+        self.get_users_by_username_calls: list[list[str]] = []
         self.send_calls: list[tuple[str, str]] = []
         self.dm_events_calls: list[dict] = []
 
@@ -61,6 +64,10 @@ class FakeXClient:
         error = self._pop_error("search_recent_posts")
         if error:
             raise error
+        if self._search_pages is not None:  # scripted multi-page mode
+            if self._search_pages:
+                return self._search_pages.pop(0)
+            return Page(data=[], next_token=None)
         taken, self._posts = self._posts[:max_results], self._posts[max_results:]
         return Page(data=taken, next_token=None)
 
@@ -72,6 +79,15 @@ class FakeXClient:
             raise error
         wanted = set(user_ids)
         return [p for p in self._profiles if p.id in wanted]
+
+    def get_users_by_usernames(self, usernames: list[str]) -> list[Profile]:
+        self.get_users_by_username_calls.append(list(usernames))
+        self._check_unavailable("get_users_by_usernames")
+        error = self._pop_error("get_users_by_usernames")
+        if error:
+            raise error
+        wanted = {u.lower() for u in usernames}
+        return [p for p in self._profiles if p.username and p.username.lower() in wanted]
 
     def send_dm(self, participant_id: str, text: str) -> SendResult:
         self.send_calls.append((participant_id, text))

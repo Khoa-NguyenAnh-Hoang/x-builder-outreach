@@ -93,6 +93,11 @@ class XClient(Protocol):
 
     def get_users(self, user_ids: list[str]) -> list[Profile]: ...
 
+    def get_users_by_usernames(self, usernames: list[str]) -> list[Profile]:
+        """GET /2/users/by — documented in docs/x-api-feasibility.md §2 row (b);
+        added in T08 for seed-username discovery."""
+        ...
+
     def send_dm(self, participant_id: str, text: str) -> SendResult: ...
 
     def get_dm_events(

@@ -95,6 +95,7 @@ One process, one operator, localhost. UI holds no business rules — all policy 
 class XClient(Protocol):
     def search_recent_posts(query, max_results=100, next_token=None) -> Page[Post]     # GET /2/tweets/search/recent
     def get_users(user_ids) -> list[Profile]                                           # GET /2/users
+    def get_users_by_usernames(usernames) -> list[Profile]                             # GET /2/users/by (added T08 — documented T01 §2 row (b))
     def send_dm(participant_id, text) -> SendResult(dm_conversation_id, dm_event_id)   # POST /2/dm_conversations/with/{id}/messages
     def get_dm_events(participant_id=None, conversation_id=None) -> list[DMEvent]      # GET /2/dm_events family
     # endpoints not entitled in the account raise EndpointUnavailable — never silently simulate success
