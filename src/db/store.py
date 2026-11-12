@@ -41,6 +41,22 @@ def get_prospect_by_x_user_id(conn: sqlite3.Connection, x_user_id: str) -> sqlit
     ).fetchone()
 
 
+def get_prospect(conn: sqlite3.Connection, prospect_id: int) -> sqlite3.Row | None:
+    return conn.execute("SELECT * FROM prospects WHERE id = ?", (prospect_id,)).fetchone()
+
+
+def get_evidence_for_prospect(conn: sqlite3.Connection, prospect_id: int) -> list[sqlite3.Row]:
+    """Evidence with text, profile rows first, newest first — the only input drafting may use."""
+    return conn.execute(
+        """
+        SELECT * FROM evidence
+        WHERE prospect_id = ? AND text IS NOT NULL AND text != ''
+        ORDER BY (source_type = 'profile') DESC, captured_at DESC, id DESC
+        """,
+        (prospect_id,),
+    ).fetchall()
+
+
 def upsert_evidence(conn: sqlite3.Connection, e: Evidence) -> int:
     (evidence_id,) = conn.execute(
         """

@@ -36,7 +36,7 @@ TECH_TERMS = [
 ]
 
 
-def _matches(text: str, terms: list[str]) -> list[str]:
+def match_terms(text: str, terms: list[str]) -> list[str]:
     """Distinct matched terms (word-boundary match, case-insensitive)."""
     lowered = text.lower()
     return [t for t in terms if re.search(rf"\b{re.escape(t)}\b", lowered)]
@@ -65,10 +65,10 @@ def qualify(prospect_id: int, profile: Profile | None, posts: list[Post]) -> Qua
     ).strip()
     post_text = " ".join(p.text for p in posts)
 
-    ai_hits = _matches(bio_text, AI_TERMS) + _matches(post_text, AI_TERMS)
-    robotics_hits = _matches(bio_text, ROBOTICS_TERMS) + _matches(post_text, ROBOTICS_TERMS)
-    role_hits = _matches(bio_text, ROLE_TERMS) + _matches(post_text, ROLE_TERMS)
-    tech_hits = _matches(bio_text, TECH_TERMS) + _matches(post_text, TECH_TERMS)
+    ai_hits = match_terms(bio_text, AI_TERMS) + match_terms(post_text, AI_TERMS)
+    robotics_hits = match_terms(bio_text, ROBOTICS_TERMS) + match_terms(post_text, ROBOTICS_TERMS)
+    role_hits = match_terms(bio_text, ROLE_TERMS) + match_terms(post_text, ROLE_TERMS)
+    tech_hits = match_terms(bio_text, TECH_TERMS) + match_terms(post_text, TECH_TERMS)
 
     reasons: list[str] = []
     relevance = min(1.0, (len(ai_hits) + len(robotics_hits)) / 3)
