@@ -101,7 +101,7 @@ class XClient(Protocol):
     # endpoints not entitled in the account raise EndpointUnavailable — never silently simulate success
 
 class LLMClient(Protocol):
-    def draft(candidate, evidence) -> DraftText   # default impl: deterministic TemplateDrafter
+    def propose(context, evidence) -> DraftProposal   # claims verified against stored evidence; API impl only with user-approved provider (D3 default: none — template path is in drafting.py)
 
 class Settings(BaseSettings):                     # pydantic-settings, loaded from .env
     x_bearer_token, x_client_id, x_client_secret, oauth_callback_url
