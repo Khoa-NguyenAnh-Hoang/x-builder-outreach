@@ -8,7 +8,7 @@ import streamlit as st
 from src.config import get_settings
 from src.db import connect, init_db
 from src.logging_config import setup_logging
-from src.ui.pages import render_candidates_tab, render_discover_tab
+from src.ui.pages import render_candidates_tab, render_discover_tab, render_outreach_tab
 
 settings = get_settings()
 setup_logging(secrets=settings.secret_values())
@@ -37,8 +37,11 @@ st.caption(
     f"test allowlist: {sorted(settings.test_allowlist_ids()) or 'empty'} (policy I4)"
 )
 
-tab_discover, tab_candidates = st.tabs(["1 · Discover", "2 · Candidates, drafts & consent"])
+tab_discover, tab_candidates, tab_outreach = st.tabs(
+    ["1 · Discover", "2 · Candidates, drafts & consent", "3 · Outreach & replies"])
 with tab_discover:
     render_discover_tab(conn, settings)
 with tab_candidates:
     render_candidates_tab(conn, settings)
+with tab_outreach:
+    render_outreach_tab(conn, settings)

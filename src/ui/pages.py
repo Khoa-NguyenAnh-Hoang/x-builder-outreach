@@ -145,6 +145,89 @@ def _render_consent_panel(conn, detail) -> None:
                     st.error(str(err))
 
 
+def render_outreach_tab(conn, settings: Settings) -> None:
+    data = workflows.load_dashboard(conn)
+    if data.tracking_mode == "manual":
+        st.info(
+            "📋 Reply tracking mode: **manual** — replies are recorded by the operator "
+            "below. Automated DM-event polling activates only after T07 verifies the "
+            "`dm.read` entitlement (decision D4). This is not real-time monitoring."
+        )
+
+    cols = st.columns(5)
+    cols[0].metric("sent", data.status_counts.get("sent", 0))
+    cols[1].metric("failed", data.status_counts.get("failed", 0))
+    cols[2].metric("unknown ⚠️", data.status_counts.get("unknown", 0))
+    cols[3].metric("replied", data.replied_count)
+    cols[4].metric("opted out", data.opted_out_count)
+    st.caption(f"{data.total_attempts} outreach attempt(s) recorded in total — all values from the database")
+
+    st.markdown("**Needs attention**")
+    if not data.attention:
+        st.success("Nothing needs attention — no ambiguous or failed sends.")
+    for a in data.attention:
+        if a.status == "unknown":
+            st.error(
+                f"⚠️ Attempt #{a.attempt_id} to @{a.username or a.x_user_id} is **unknown** — "
+                "the API outcome was ambiguous. Reconcile against the official account before "
+                "any retry (invariant I7: never blind-retry)."
+            )
+        else:
+            st.warning(
+                f"Attempt #{a.attempt_id} to @{a.username or a.x_user_id} **failed** "
+                f"(mode {a.mode}, no policy denial recorded) — investigate before re-approving."
+            )
+
+    st.markdown("**Outreach history**")
+    if data.recent_attempts:
+        st.table({
+            "id": [a.attempt_id for a in data.recent_attempts],
+            "to": [f"@{a.username or a.x_user_id}" for a in data.recent_attempts],
+            "status": [a.status for a in data.recent_attempts],
+            "mode": [a.mode for a in data.recent_attempts],
+            "msg id": [a.x_event_id or "—" for a in data.recent_attempts],
+            "requested": [a.requested_at for a in data.recent_attempts],
+            "resolved": [a.resolved_at or "—" for a in data.recent_attempts],
+            "deny reason": [a.deny_reason or "—" for a in data.recent_attempts],
+        })
+    else:
+        st.info("No outreach attempts yet — sending arrives in T13; denials are recorded from the eligibility gate.")
+
+    st.markdown(f"**Replies** ({len(data.replies)})")
+    if st.button("Pull DM events via API (automated path)"):
+        client = fixtures.offline_client()
+        result = workflows.ingest_replies(conn, client)
+        if isinstance(result, workflows.WorkflowError):
+            st.warning(result.message)
+        else:
+            st.info(f"{result} new reply event(s) ingested.")
+    for r in data.replies:
+        icon = "✍️" if r.source == "manual" else "📩"
+        with st.expander(f"{icon} [{r.source}] from @{r.username or r.prospect_id}"
+                         + (f" — {r.occurred_at}" if r.occurred_at else "")):
+            st.markdown(r.text or "*(no text recorded)*")
+            if r.attempt_id:
+                st.caption(f"linked to outreach attempt #{r.attempt_id}")
+
+    st.markdown("**Record a reply manually** (manual tracking path)")
+    candidates = workflows.load_candidates(conn)
+    if not candidates:
+        st.caption("No candidates yet.")
+        return
+    with st.form("manual_reply_form"):
+        options = {c["id"]: f"@{c['username']}" if c["username"] else c["x_user_id"]
+                   for c in candidates}
+        pid = st.selectbox("Prospect", list(options.keys()), format_func=lambda k: options[k],
+                           key="manual_reply_prospect")
+        text = st.text_area("What did they reply? (paste/summarize)", key="manual_reply_text")
+        if st.form_submit_button("Record reply"):
+            result = workflows.record_manual_reply(conn, pid, text or None)
+            if isinstance(result, workflows.WorkflowError):
+                st.error(result.message)
+            else:
+                st.rerun()
+
+
 def _render_draft_panel(conn, detail, settings: Settings) -> None:
     st.markdown("**Draft review & approval** (policy I1 — approval binds to the text as shown)")
     pid = detail["prospect"]["id"]

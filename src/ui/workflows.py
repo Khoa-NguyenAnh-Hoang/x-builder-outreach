@@ -21,6 +21,7 @@ from src.services.consent import (
     mark_opt_out as _mark_opt_out,
     record_consent as _record_consent,
 )
+from src.services.dashboard import dashboard_data
 from src.services.discovery import DiscoveryQuery
 from src.services.drafting import GeneratedDraft, generate_draft
 from src.services.pipeline import PipelineResult, discover_and_qualify
@@ -143,3 +144,26 @@ def record_consent(conn, prospect_id: int, source: str, evidence_url: str | None
     """Raises OptedOutLockedError if the recipient is opted out (I2) — pages show it."""
     _record_consent(conn, prospect_id, source=source, evidence_url=evidence_url,
                     scope=scope, verified_by=verified_by)
+
+
+def load_dashboard(conn, automated_reply_tracking: bool = False):
+    return dashboard_data(conn, automated_reply_tracking=automated_reply_tracking)
+
+
+def record_manual_reply(conn, prospect_id: int, text: str | None = None):
+    from src.services.conversations import record_manual_reply as _record
+    try:
+        return _record(conn, prospect_id, text)
+    except ValueError as err:
+        return WorkflowError(str(err))
+
+
+def ingest_replies(conn, client):
+    """Pull DM events via the API; on any client failure the manual path stays active."""
+    from src.services.conversations import ingest_reply_events
+    try:
+        return ingest_reply_events(conn, client)
+    except XClientError as err:
+        return WorkflowError(
+            f"automated reply polling unavailable: {err} — manual tracking stays active"
+        )
