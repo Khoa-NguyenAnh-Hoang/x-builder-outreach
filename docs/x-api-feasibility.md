@@ -74,9 +74,12 @@ From [X Automation Rules](https://help.x.com/en/rules-and-policies/x-automation)
 
 Harmless read/auth checks only: OAuth 2.0 PKCE authorize → `GET /2/users/:id` on own account → one `GET /2/tweets/search/recent` with a 1-result query. **No DM send in T01/T07 smoke** — first send happens in T13 against own/consenting accounts only.
 
-## 8. Decision needed from user (D2)
+## 8. Decision (D2) — RESOLVED 13 November 2026
 
-Fix the spend cap now so implementation can depend on credits: **recommended: $20** (covers §3 projection; free credits may reduce net to $0). Alternatives: $10 (tight, limits discovery re-runs) / $50 (generous, unnecessary for demo).
+User decision: **purchase $5 of credits** (minimum first purchase) with an eligible card
+to trigger the **$20 promotional credits** — cash exposure capped at **$5**, credit
+balance ≈ $25. That covers the §3 demo projection (≈ $15.30) with margin. No spend
+occurs before the console checklist confirms entitlements and prices.
 
 ## 9. Sources (official, checked 11 Nov 2026)
 
