@@ -16,12 +16,13 @@ SRC_DIR = REPO_ROOT / "src"
 
 def test_src_imports_under_streamlit_like_sys_path():
     sys_path_filter = (
+        "import sys\n"
         "sys.path = [p for p in sys.path if 'x-builder-outreach' not in p or '.venv' in p]\n"
         f"sys.path.insert(0, r'{SRC_DIR}')\n"
         "import src.config, src.app\n"
         "print('imports ok')\n"
     )
     proc = subprocess.run([sys.executable, "-c", sys_path_filter],
-                          capture_output=True, text=True, timeout=60)
+                          capture_output=True, text=True, timeout=60, check=False)
     assert proc.returncode == 0, f"import failed under Streamlit-like sys.path:\n{proc.stderr}"
     assert "imports ok" in proc.stdout
