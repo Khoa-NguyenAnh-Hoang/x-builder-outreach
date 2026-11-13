@@ -234,14 +234,23 @@ def _render_draft_panel(conn, detail, settings: Settings) -> None:
     pid = detail["prospect"]["id"]
     drafts = detail["drafts"]
 
+    latest = next((d for d in drafts if d["status"] in ("draft", "approved")), None)
+
+    providers = workflows.llm_providers(settings)
+    default = "groq" if "groq" in providers else providers[0]
+    provider = st.selectbox("Draft generator", providers, index=providers.index(default),
+                            key=f"gen_provider_{pid}",
+                            help="template = deterministic, evidence-quoted; groq/mistral = "
+                                 "AI-drafted, same claim-to-evidence verification, automatic "
+                                 "fallback to template if the model breaks the contract")
+
     if st.button("Generate draft from stored evidence", key=f"gen_{pid}"):
-        result = workflows.draft_for_candidate(conn, pid)
+        result = workflows.draft_for_candidate(
+            conn, pid, llm=workflows.llm_client_for(settings, provider))
         if isinstance(result, workflows.WorkflowError):
             st.error(result.message)
         else:
             st.rerun()
-
-    latest = next((d for d in drafts if d["status"] in ("draft", "approved")), None)
     if latest is None:
         st.info("No draft yet — generate one above.")
         return

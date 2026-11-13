@@ -33,7 +33,8 @@ Both are honest; live discovery is stronger evidence.
 - Narration: "A transparent rule-based score — relevance, role, contribution, freshness — with the exact matched terms cited. And every claim a draft will make is anchored to one of these evidence items, with its source URL and capture time."
 
 ### Segment 4 — Draft, approval, and the gate (2:50–4:00) — tab 2, same candidate
-- Generate draft → show the grounded-claims caption → edit one word in the text area → **Save edit** → **Approve this text**.
+- Draft generator select: pick **groq** (if key configured) → generate → show the AI draft's grounded-claims caption; then pick **template** → generate → same contract, plainer phrasing. Narration: "Both generators satisfy the same contract — every claim is a verbatim quote of stored evidence; an invented claim is rejected automatically."
+- Edit one word in the text area → **Save edit** → **Approve this text**.
 - Eligibility panel, mode `operator_approved` → **Evaluate**: **DENIED — per-message operator approval** (before approving, if order allows) → approve → **ALLOWED**, all checks green.
 - Then click **Mark opted out** → evaluate again → **DENIED — opt-out suppression**.
 - Narration: "Approval binds to exactly this text, for one send. And the gate outranks the UI: an opted-out recipient can never be messaged again — no operator override exists. That's deliberate."

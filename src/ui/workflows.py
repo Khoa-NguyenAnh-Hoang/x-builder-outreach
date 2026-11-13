@@ -153,6 +153,27 @@ def load_dashboard(conn, automated_reply_tracking: bool = False):
     return dashboard_data(conn, automated_reply_tracking=automated_reply_tracking)
 
 
+def llm_client_for(settings: Settings, provider: str):
+    """None -> deterministic template. Otherwise an approved free-tier provider (D3=B)."""
+    from src.integrations.llm_client import make_groq_client, make_mistral_client
+
+    if provider == "groq" and settings.groq_api_key:
+        return make_groq_client(settings.groq_api_key)
+    if provider == "mistral" and settings.mistral_api_key:
+        return make_mistral_client(settings.mistral_api_key)
+    return None
+
+
+def llm_providers(settings: Settings) -> list[str]:
+    """Generator options for the UI select, in preference order."""
+    options = ["template"]
+    if settings.groq_api_key:
+        options.append("groq")
+    if settings.mistral_api_key:
+        options.append("mistral")
+    return options
+
+
 def record_manual_reply(conn, prospect_id: int, text: str | None = None):
     from src.services.conversations import record_manual_reply as _record
     try:

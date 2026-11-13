@@ -26,10 +26,12 @@ used; scraping and browser automation are explicitly out of scope.
 
 ## Trade-offs
 
-- **Deterministic template drafts over an LLM** (default): plainer phrasing, but every
-  claim is verifiably grounded; the LLM path exists behind an interface, applies the
-  same claim-verification contract, and activates only with an explicitly approved
-  provider. An LLM never writes a claim the evidence can't back.
+- **AI drafting behind a hard verification contract**: drafts come from Groq's free
+  tier (user-approved, $0) or a deterministic template. Both generators satisfy the
+  same claim-to-evidence contract — every personalised claim is a verbatim quote of
+  stored, URL-referenced evidence; a hallucinated claim is rejected at generation and
+  the template draft is produced instead. An LLM cannot write a claim the evidence
+  doesn't back.
 - **Narrow discovery over broad crawling**: bounded pages, capped queries — reliability
   over coverage, per the brief's preference.
 - **Local SQLite over a hosted service**: zero-cost, zero-credential-exposure; the

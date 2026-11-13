@@ -57,9 +57,11 @@ and never calls endpoints that are not entitled — unavailable endpoints fail l
 
 - **Live sending/auth pending**: offline fixture mode is fully functional; live wiring
   lands with T07/T13 after the console GO.
-- **Deterministic draft templates**: drafts quote real evidence verbatim — honest but
-  plainer than LLM phrasing. An LLM path exists behind an interface and activates only
-  with explicit provider approval (decision D3).
+- **AI drafts on free tiers (D3=B)**: the draft panel offers Groq / Mistral generators
+  (user-approved free tiers, $0 cost). AI output passes the same claim-to-evidence
+  verification as templates — hallucinated claims are rejected and the deterministic
+  template draft is produced instead (shown in the UI as a fallback). Without keys,
+  template-only drafting remains the default.
 - **English-only relevance heuristics**: qualification term lists match English;
   non-English bios score lower (reflected in reasons, not hidden).
 - **Manual reply tracking** until `dm.read` is verified (D4) — not real-time monitoring.
