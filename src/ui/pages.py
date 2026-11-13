@@ -10,13 +10,15 @@ from src.ui import fixtures, workflows
 
 
 def _discovery_client(settings: Settings):
-    """Live client arrives in T07; until then the offline fixture client is used,
-    and the page must say so loudly."""
+    """Live client when credentials exist (T07+); offline fixtures otherwise —
+    whichever is active is announced on screen."""
     if settings.x_bearer_token:
-        st.info(
-            "Credentials detected — the live X client lands in T07 (auth + smoke test). "
-            "Discovery below still runs on the offline fixture client until then."
+        from src.integrations.x_client import OfficialXClient
+        st.success(
+            "🟢 LIVE discovery — real X API data (app-only reads, spend capped by policy). "
+            "Sending stays gated until T13."
         )
+        return OfficialXClient.from_settings(settings), True
     st.warning(fixtures.OFFLINE_NOTE)
     return fixtures.offline_client(), False
 

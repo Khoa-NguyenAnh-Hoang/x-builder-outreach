@@ -2,7 +2,7 @@
 
 **Method:** Official documentation only (docs.x.com, help.x.com). No third-party wrappers or tutorials used as evidence. Live read/auth smoke tests are deferred to T07 (need user credentials — see checklist §7). Console-specific entitlements are pending user verification (§6).
 
-**Verdict up front: CONDITIONAL GO** for all three capabilities (discovery, sending, reply tracking). Every required endpoint is documented-available on the current pay-per-usage model at prototype-scale cost. The conditions are: (1) user confirms app permissions + credits in the Developer Console (§6), (2) spend cap is fixed (§8, recommended $20).
+**Verdict up front: GO** for all three capabilities (discovery, sending, reply tracking) — resolved 13 November 2026: Developer Console entitlements confirmed (READ_WRITE_DM; DM send + DM read available, no higher tier required), spend cap fixed (§8: $5 cash + 5% promo bonus), and the live bearer read smoke passed (§10). Remaining condition: one-time user-context authorize (§10) before DM operations.
 
 ---
 
@@ -56,14 +56,14 @@ From [X Automation Rules](https://help.x.com/en/rules-and-policies/x-automation)
 
 | Capability | Verdict | Condition |
 |---|---|---|
-| Discovery (search + lookup) | **GO** | Console shows endpoint access + credits ≥ $10; T07 smoke test succeeds |
-| Sending (approved DMs) | **GO** | App permissions = Read+Write+DM; credits available; sends limited to per-message-approved, own/consenting (dev/test) recipients |
-| Reply tracking | **GO** | `dm.read` scope grantable; 30-day retention acceptable (it is) |
-| **Overall** | **CONDITIONAL GO** | Pending §6 console verification and §8 cap decision; **NO-GO trigger:** console shows DM endpoints not entitled to the account, or credits cannot be purchased — then escalate per plan.md rollback ("non-sending build does not satisfy the brief") |
+| Discovery (search + lookup) | **GO — live-verified 13 Nov** | Bearer smoke passed: real recent search + user lookup returned well-formed data (§10) |
+| Sending (approved DMs) | **GO** | Entitlements confirmed (DM send available, READ_WRITE_DM); user-context authorize + first controlled send = T13 |
+| Reply tracking | **GO** | DM read entitled; automated polling activates after user-context authorize (D4 → api) |
+| **Overall** | **GO** | Entitlements + pricing resolved; live read verified; last step: one-time user-context authorize (§10) |
 
-## 6. USER-VERIFY — Developer Console checklist (cannot be verified from docs)
+## 6. Developer Console checklist — COMPLETED 13 November 2026
 
-1. [ ] Developer account + App exist and are **approved** (DM lookup requires an approved account).
+1. [x] Developer account + App **approved** — `builder-outreach-proto`, accessLevel **READ_WRITE_DM**, OAuth 2.0.
 2. [ ] App permissions set to **"Read and Write" + "Direct Messages"** (App settings → User authentication settings; also set a **callback URL** for OAuth 2.0 PKCE, e.g. `http://127.0.0.1:8501/callback`).
 3. [ ] **OAuth 2.0 Client ID and Client Secret** available (PKCE user-context flow).
 4. [ ] Endpoint entitlements: Console shows per-endpoint access/rates for search, users, DM send, DM read (exact product names and per-endpoint rates surface only there).
@@ -92,6 +92,13 @@ higher spend). Balance ≈ **$5.25–5.50**.
 | **Total** | | **≈ $3.90** — fits with ~$1.30 margin |
 
 If a larger allowance is later approved, the original ≈$15 projection still applies.
+
+## 10. T07 live smoke results (13 November 2026)
+
+- `test_live_bearer_search_recent` — **PASSED**: real `GET /2/tweets/search/recent` (query "robotics", 10 results) returned well-formed posts. Cost ≈ $0.05.
+- `test_live_bearer_user_lookup` — **PASSED**: real `GET /2/users/by?usernames=XDevelopers` returned the profile with follower metrics. Cost ≈ $0.01.
+- `test_live_user_context_me` — **PENDING**: runs after the one-time user-context authorize (`uv run python -m src.integrations.x_auth`) and unlocks DM operations (T13) and automated reply polling (D4 → api).
+- UI live-discovery wired: with credentials present, the Discover tab runs the live client and labels it on screen; without, it falls back to labelled fixtures.
 
 ## 9. Sources (official, checked 11 Nov 2026)
 
