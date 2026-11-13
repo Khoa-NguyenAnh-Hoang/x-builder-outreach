@@ -97,7 +97,7 @@ If a larger allowance is later approved, the original ≈$15 projection still ap
 
 - `test_live_bearer_search_recent` — **PASSED**: real `GET /2/tweets/search/recent` (query "robotics", 10 results) returned well-formed posts. Cost ≈ $0.05.
 - `test_live_bearer_user_lookup` — **PASSED**: real `GET /2/users/by?usernames=XDevelopers` returned the profile with follower metrics. Cost ≈ $0.01.
-- `test_live_user_context_me` — **PENDING**: runs after the one-time user-context authorize (`uv run python -m src.integrations.x_auth`) and unlocks DM operations (T13) and automated reply polling (D4 → api).
+- `test_live_user_context_me` — **PASSED 13 Nov**: OAuth 2.0 PKCE authorize completed (scopes granted: offline.access, dm.read, users.read, dm.write, tweet.access via tweet.read); `GET /2/users/me` read the authorized account back. Unlocks T13 (controlled send) and automated reply polling (D4 → api).
 - UI live-discovery wired: with credentials present, the Discover tab runs the live client and labels it on screen; without, it falls back to labelled fixtures.
 
 ## 9. Sources (official, checked 11 Nov 2026)
