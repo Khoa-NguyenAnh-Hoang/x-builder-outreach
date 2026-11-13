@@ -184,24 +184,34 @@ def main() -> int:  # interactive CLI: `uv run python -m src.integrations.x_auth
     SESSION_PATH.write_text(json.dumps({"state": state, "code_verifier": verifier}),
                             encoding="utf-8")
 
-    print("1) Open this URL in a browser, approve the permissions, then copy the FULL")
-    print("   URL of the page you land on (it will fail to load — that is expected):")
+    print("1) Open this URL in a browser ONCE, approve, then IMMEDIATELY copy the FULL")
+    print("   URL of the page you land on (it will fail to load — that is expected).")
+    print("   X codes are single-use and expire fast — do not re-open the link after approving.")
     print()
     print(build_authorize_url(settings.x_client_id, settings.oauth_callback_url,
                               state, challenge))
     print()
-    pasted = input("2) Paste that redirect URL (or the bare code): ")
-    code = extract_code(pasted)
-    received = None
-    if "state=" in pasted:
-        received = parse_qs(urlparse(pasted).query).get("state", [None])[0]
-    validate_state(state, received)
-    tokens = exchange_code(settings.x_client_id, settings.x_client_secret, code,
-                           settings.oauth_callback_url, verifier)
-    save_tokens(tokens)
-    print("Authorized. Access token stored in data/tokens.json — never printed, never committed.")
-    print("Scope granted:", tokens.get("scope", SCOPES))
-    return 0
+
+    for attempt in range(1, 4):  # a consumed/expired code just needs a fresh approval
+        pasted = input(f"2) Paste the redirect URL (or bare code) [attempt {attempt}/3]: ")
+        try:
+            code = extract_code(pasted)
+            received = None
+            if "state=" in pasted:
+                received = parse_qs(urlparse(pasted).query).get("state", [None])[0]
+            validate_state(state, received)
+            tokens = exchange_code(settings.x_client_id, settings.x_client_secret, code,
+                                   settings.oauth_callback_url, verifier)
+        except AuthenticationError as err:
+            print(f"   ✗ attempt {attempt} failed: {err}")
+            print("     → approve the SAME link again (fresh code) and paste the new URL right away.")
+            continue
+        save_tokens(tokens)
+        print("Authorized. Access token stored in data/tokens.json — never printed, never committed.")
+        print("Scope granted:", tokens.get("scope", SCOPES))
+        return 0
+    print("Three failed attempts — start over with `uv run python -m src.integrations.x_auth`.")
+    return 1
 
 
 if __name__ == "__main__":
