@@ -10,6 +10,16 @@ dependencies = [
     "streamlit>=1.67.0",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# `uv sync` installs this project in editable mode, so `import src.*` resolves
+# from site-packages regardless of sys.path construction (Streamlit adds the
+# script's dir, not the repo root — this fixes the app's ModuleNotFoundError).
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
