@@ -47,10 +47,11 @@ code — the UI renders gate outcomes but cannot override them.
 
 ## Costs
 
-X API is pay-per-use credits (no subscription). Documented unit prices and the
-demo-scale projection (≈ $15.30, cap recommended $20, free credits may reduce net cost):
-`docs/x-api-feasibility.md` §1–§3. The app never spends beyond the configured caps and
-never calls endpoints that are not entitled — unavailable endpoints fail loudly.
+X API is pay-per-use credits (no subscription). Actual setup: **$5 cash** spent on
+credits; promotional bonus was percentage-based (5% at this tier), not flat — balance
+≈ $5.25. The demo budget fits inside that (≈ $3.90; unit prices and revised projection
+in `docs/x-api-feasibility.md` §3/§8). The app never spends beyond the configured caps
+and never calls endpoints that are not entitled — unavailable endpoints fail loudly.
 
 ## Known limitations (stated, not hidden)
 

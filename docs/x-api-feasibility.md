@@ -74,12 +74,24 @@ From [X Automation Rules](https://help.x.com/en/rules-and-policies/x-automation)
 
 Harmless read/auth checks only: OAuth 2.0 PKCE authorize → `GET /2/users/:id` on own account → one `GET /2/tweets/search/recent` with a 1-result query. **No DM send in T01/T07 smoke** — first send happens in T13 against own/consenting accounts only.
 
-## 8. Decision (D2) — RESOLVED 13 November 2026
+## 8. Decision (D2) — RESOLVED 13 November 2026, updated with actual promo outcome
 
-User decision: **purchase $5 of credits** (minimum first purchase) with an eligible card
-to trigger the **$20 promotional credits** — cash exposure capped at **$5**, credit
-balance ≈ $25. That covers the §3 demo projection (≈ $15.30) with margin. No spend
-occurs before the console checklist confirms entitlements and prices.
+User decision: **purchase $5 of credits** with an eligible card; cash exposure capped at
+**$5**. **Actual promo outcome (13 Nov):** percentage bonus, not the flat $20 the docs
+advertising mentioned — **5% bonus credits at this spend tier** (tiered toward 10% at
+higher spend). Balance ≈ **$5.25–5.50**.
+
+**Revised demo budget to fit the real balance** (dedup: same resource within 24 h bills once):
+
+| Usage item | Volume | Cost |
+|---|---|---|
+| Discovery: 1 run, 5 queries × 100 posts (+ 1 re-run, deduped) | ~600 posts | ~$3.00 |
+| User lookup | ~30 profiles | ~$0.30 |
+| Test sends (own/consenting accounts) | 5 DMs | ~$0.08 |
+| Reply reads | ~50 events | ~$0.50 |
+| **Total** | | **≈ $3.90** — fits with ~$1.30 margin |
+
+If a larger allowance is later approved, the original ≈$15 projection still applies.
 
 ## 9. Sources (official, checked 11 Nov 2026)
 

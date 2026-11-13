@@ -49,11 +49,12 @@ account"]**.
 
 ## Costs
 
-X API is pay-per-use credits. Purchased **$5** of credits; the first-purchase promotion
-added **$20** promotional credits (**cash exposure: $5**, credit balance ≈ $25).
-Projected demo-scale usage ≈ **$15.30** (2 discovery runs, 100 lookups, 20 test sends,
-reply reads — unit prices in `docs/x-api-feasibility.md`). The app cannot spend beyond
-its caps and fails loudly on unentitled endpoints. No other paid tools.
+X API is pay-per-use credits. **Cash spend: $5** (card + first purchase); X's promotion
+added a small percentage bonus (5% at this tier — the flat-credit offer in the docs did
+not apply). Credit balance ≈ **$5.25**; the demo budget was sized to it (≈ $3.90:
+one discovery run ~600 posts, lookups, 5 test sends, reply reads — unit prices in
+`docs/x-api-feasibility.md`). The app cannot spend beyond its caps and fails loudly on
+unentitled endpoints. No other paid tools.
 
 ## How AI tools were used, and how their output was checked
 
