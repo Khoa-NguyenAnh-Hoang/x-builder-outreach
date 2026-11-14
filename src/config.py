@@ -27,9 +27,9 @@ class Settings(BaseSettings):
     # Comma-separated X user IDs allowed as dev/test recipients (policy I4).
     test_recipient_allowlist: str = ""
 
-    # Optional AI drafting providers (D3=B: free tiers user-approved 13 Nov 2026).
+    # Optional AI drafting provider (D3=B: Groq free tier, user-approved 13 Nov 2026;
+    # Mistral preset removed 14 Nov — key access lost).
     groq_api_key: str | None = None
-    mistral_api_key: str | None = None
 
     @model_validator(mode="after")
     def _caps_within_x_limits(self) -> "Settings":
@@ -61,7 +61,7 @@ class Settings(BaseSettings):
 
     def secret_values(self) -> tuple[str, ...]:
         """Values the logging redaction filter must scrub from any output (I9)."""
-        vals = (self.x_bearer_token, self.x_client_secret, self.groq_api_key, self.mistral_api_key)
+        vals = (self.x_bearer_token, self.x_client_secret, self.groq_api_key)
         return tuple(v for v in vals if v)
 
 

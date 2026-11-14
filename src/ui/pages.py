@@ -282,7 +282,7 @@ def _render_draft_panel(conn, detail, settings: Settings) -> None:
     default = "groq" if "groq" in providers else providers[0]
     provider = st.selectbox("Draft generator", providers, index=providers.index(default),
                             key=f"gen_provider_{pid}",
-                            help="template = deterministic, evidence-quoted; groq/mistral = "
+                            help="template = deterministic, evidence-quoted; groq = "
                                  "AI-drafted, same claim-to-evidence verification, automatic "
                                  "fallback to template if the model breaks the contract")
 

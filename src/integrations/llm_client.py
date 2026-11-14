@@ -184,8 +184,3 @@ def make_groq_client(api_key: str, model: str = "openai/gpt-oss-120b",
     return OpenAICompatLLMClient(name=f"groq/{model}", base_url="https://api.groq.com/openai/v1",
                                  api_key=api_key, model=model, transport=transport)
 
-
-def make_mistral_client(api_key: str, model: str = "mistral-small-latest",
-                        transport: httpx.BaseTransport | None = None) -> OpenAICompatLLMClient:
-    return OpenAICompatLLMClient(name=f"mistral/{model}", base_url="https://api.mistral.ai/v1",
-                                 api_key=api_key, model=model, transport=transport)

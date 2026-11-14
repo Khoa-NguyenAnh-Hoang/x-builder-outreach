@@ -147,12 +147,12 @@ def test_service_falls_back_when_llm_hallucinates():
 # --- provider selection -------------------------------------------------------
 
 def test_provider_selection_honours_keys():
-    settings = Settings(_env_file=None, groq_api_key="g", mistral_api_key="m")
+    settings = Settings(_env_file=None, groq_api_key="g")
     assert workflows_llm_client_for(settings, "groq") is not None
-    assert workflows_llm_client_for(settings, "mistral") is not None
     assert workflows_llm_client_for(settings, "template") is None
     assert workflows_llm_client_for(Settings(_env_file=None), "groq") is None
     assert workflows_llm_providers(Settings(_env_file=None, groq_api_key="g")) == ["template", "groq"]
+    assert workflows_llm_providers(Settings(_env_file=None)) == ["template"]
 
 
 def workflows_llm_client_for(settings, provider):
@@ -177,22 +177,3 @@ def test_live_groq_proposal_is_grounded():
     proposal = make_groq_client(settings.groq_api_key).propose(CTX, _evidence())
     assert proposal.text.strip()
     assert proposal.claims  # the model was asked for claim refs
-
-
-@pytest.mark.live
-def test_live_mistral_proposal_is_grounded():
-    from src.config import get_settings
-
-    settings = get_settings()  # reads .env — Settings(_env_file=None) would ignore it
-    if not settings.mistral_api_key:
-        pytest.skip("no MISTRAL_API_KEY in .env")
-    from src.integrations.llm_client import LLMError, make_mistral_client
-
-    try:
-        proposal = make_mistral_client(settings.mistral_api_key).propose(CTX, _evidence())
-    except LLMError as err:
-        if "429" in str(err):
-            pytest.skip(f"mistral free tier rate-limited right now ({err}) — key itself is valid")
-        raise
-    assert proposal.text.strip()
-    assert proposal.claims

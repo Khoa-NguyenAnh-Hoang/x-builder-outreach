@@ -132,7 +132,7 @@ Everything else requires a new decision record. No scraping libs, no browser aut
 
 - **D1 API access:** CONDITIONAL GO documented in `docs/x-api-feasibility.md`; awaiting user console checklist. Implementation against live endpoints starts T06/T07 only after GO.
 - **D2 spend cap:** recommended **$20**; fixed by user at console check.
-- **D3 LLM provider:** **RESOLVED → B (13 Nov 2026)**: user-approved free tiers — Groq (`openai/gpt-oss-120b`, 30 req/min, 1K/day) and Mistral presets. Same claim-verification contract as templates; any provider/parse failure falls back to the deterministic template automatically. Keys optional in `.env` (GROQ_API_KEY / MISTRAL_API_KEY).
+- **D3 LLM provider:** **RESOLVED → B (13 Nov 2026, Groq-only from 14 Nov)**: user-approved free tier — Groq (`openai/gpt-oss-120b`, 30 req/min, 1K/day). Same claim-verification contract as templates; any provider/parse failure falls back to the deterministic template automatically. Key optional in `.env` (GROQ_API_KEY). (A Mistral preset was removed 14 Nov — key access lost.)
 - **D4 reply monitoring:** MUST tier = manual status path; automated via `dm.read` once console confirms scope.
 - **D5 hosting:** A — local source + <15-min setup (brief allows this explicitly).
 
