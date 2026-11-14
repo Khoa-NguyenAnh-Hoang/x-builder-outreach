@@ -6,8 +6,12 @@ Finds AI/robotics builders on X from seed accounts or narrow segments, explains 
 
 ## Quick start
 
+Run these one command at a time (works in cmd, PowerShell and bash):
+
 ```bash
-uv sync && uv run pytest && uv run streamlit run src/app.py
+uv sync
+uv run pytest
+uv run streamlit run src/app.py
 ```
 
 Full walkthrough (< 15 minutes): **[docs/setup.md](docs/setup.md)**. Daily operator

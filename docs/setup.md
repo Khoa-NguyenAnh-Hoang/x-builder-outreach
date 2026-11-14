@@ -16,7 +16,8 @@ Install uv once: `pip install uv` (or the standalone installer from the docs sit
 ## Steps
 
 ```bash
-git clone <repo-url> && cd x-builder-outreach
+git clone <repo-url>
+cd x-builder-outreach
 uv sync                              # creates .venv, installs exact locked deps
 uv run pytest                        # 136 tests should pass (~2 s) — no network needed
 copy .env.example .env               # Windows; `cp` on macOS/Linux
