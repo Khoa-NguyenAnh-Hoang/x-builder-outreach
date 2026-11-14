@@ -1,6 +1,6 @@
 # GenAI Fund FDE Assignment — One-Page Write-up
 
-**Candidate:** [YOUR NAME] · **Submitted:** 16 November 2026 · **Repo:** `x-builder-outreach` (source + docs; setup in `docs/setup.md`, under 15 minutes)
+**Candidate:** Khoa Nguyen Anh Hoang · **Submitted:** 16 November 2026 · **Repo:** `x-builder-outreach` (source + docs; setup in `docs/setup.md`, under 15 minutes)
 
 ## What it is
 
@@ -15,7 +15,7 @@ by design and by test.
 
 Python 3.12 + uv, Streamlit UI → service layer → SQLite. All X and LLM access sits
 behind frozen interfaces with one exception type per documented failure mode; services
-are fully testable against deterministic fakes (99 tests, ruff-clean). The send-eligibility
+are fully testable against deterministic fakes (136 tests, ruff-clean). The send-eligibility
 gate implements the policy as code: opt-out suppression is absolute; every send requires
 per-message operator approval; automated/batch sending additionally requires verified
 recipient opt-in; account-level volume caps (10/15 min, 40/24 h) sit inside X's
@@ -41,13 +41,14 @@ used; scraping and browser automation are explicitly out of scope.
 
 ## Verification
 
-`uv run pytest` — 99 tests covering every compliance invariant (opt-out supremacy,
+`uv run pytest` — 136 tests covering every compliance invariant (opt-out supremacy,
 per-message approval consumption, dedup under concurrency, volume caps, evidence-grounded
 drafts including fabricated-familiarity rejection); `ruff` clean. The default suite is
 fully mocked — no network. Live tests are opt-in via a dedicated marker. **Live status at
-submission: [LIVE STATUS LINE — e.g. "OAuth + read smoke verified against the live API on
-14 Nov; first controlled send to my own account; no message sent to any unconsenting
-account"]**.
+submission: OAuth 2.0 + live read smoke verified against the real API on 13 November
+(search, user lookup, /users/me); live discovery runs in the UI; one controlled DM
+delivered to my own account through the full gate chain with its message id recorded;
+no message was ever sent to an unconsenting account.**
 
 ## Costs
 

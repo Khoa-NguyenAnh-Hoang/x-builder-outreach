@@ -17,7 +17,7 @@ activate after Developer Console setup (`docs/x-api-feasibility.md` §6).
 
 ## Verification
 
-- `uv run pytest` — 99 tests, all mocked, no network (live tests are opt-in via `-m live`)
+- `uv run pytest` — 136 tests, all mocked, no network (live tests are opt-in via `-m live`)
 - `uv run ruff check src tests` — clean
 - Test report with the mocked-vs-live distinction and invariant coverage:
   **[docs/test-results.md](docs/test-results.md)**

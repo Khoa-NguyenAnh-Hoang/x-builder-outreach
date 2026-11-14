@@ -18,7 +18,7 @@ Install uv once: `pip install uv` (or the standalone installer from the docs sit
 ```bash
 git clone <repo-url> && cd x-builder-outreach
 uv sync                              # creates .venv, installs exact locked deps
-uv run pytest                        # 99 tests should pass (~2 s) — no network needed
+uv run pytest                        # 136 tests should pass (~2 s) — no network needed
 copy .env.example .env               # Windows; `cp` on macOS/Linux
 # fill .env (next section), then:
 uv run streamlit run src/app.py      # opens http://localhost:8501

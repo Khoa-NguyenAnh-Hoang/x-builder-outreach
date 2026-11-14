@@ -1,7 +1,7 @@
-# Test Results — T16 (dated 13 November 2026, commit at time of run)
+# Test Results — T16 (final submission build, 14 November 2026)
 
 **Command:** `uv run pytest` (default) · `uv run ruff check src tests` (lint)
-**Result:** **99 passed** · ruff clean (configured ignores documented in `pyproject.toml`)
+**Result:** **136 passed** (default mocked suite) · 6 live-marked tests collected separately · ruff clean (configured ignores documented in `pyproject.toml`)
 **Environment:** Windows 11, Python 3.12.10, pytest 9.2.0
 
 ---
@@ -45,12 +45,12 @@
 
 | Check | Status |
 |---|---|
-| OAuth 2.0 PKCE authorize + read smoke (`GET /2/users/:id`, 1-result search) | ⏳ T07 |
+| OAuth 2.0 PKCE authorize + read smoke (`/2/users/me`, search, lookup) | ✅ PASSED 13 Nov — all 5 scopes granted; live search + lookup + user-context reads verified |
 | Live discovery run against own account | ✅ PASSED 13 Nov (bearer search + lookup smoke; UI live discovery active) |
 | Controlled send to own/consenting account (one message, operator-approved) | ✅ **PASSED 13 Nov** — real DM delivered to the operator's own account (dev_test mode, self-allowlist, full gate chain), message id recorded; the duplicate second send was denied |
-| Duplicate attempt on a *sent* prospect rejected live | ⏳ T13 |
-| Reply ingestion from real `dm.read` events | ⏳ T14-automated |
-| Clean-machine setup walkthrough timed < 15 min | ⏳ T20 (on a fresh checkout) |
+| Duplicate attempt on a *sent* prospect rejected live | ✅ PASSED 13 Nov — the immediate duplicate send in the live chain was denied |
+| Reply ingestion from real `dm.read` events | ✅ wired live (polling active in the UI); awaiting a real inbound reply to demonstrate end-to-end |
+| Clean-machine setup walkthrough timed < 15 min | ⏳ T20 (fresh checkout, run at audit) |
 
 ## Not yet verified (honesty list)
 
