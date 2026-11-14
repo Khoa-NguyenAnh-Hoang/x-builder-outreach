@@ -58,7 +58,9 @@ and never calls endpoints that are not entitled — unavailable endpoints fail l
 - **Live sending/auth pending**: offline fixture mode is fully functional; live wiring
   lands with T07/T13 after the console GO.
 - **AI drafts on free tiers (D3=B)**: the draft panel offers Groq / Mistral generators
-  (user-approved free tiers, $0 cost). AI output passes the same claim-to-evidence
+  (user-approved free tiers, $0 cost). Groq (`openai/gpt-oss-120b`) is the recommended
+  default — verified live 13 Nov; Mistral's free tier rate-limits aggressively (429s),
+  in which case the template draft is produced automatically. AI output passes the same claim-to-evidence
   verification as templates — hallucinated claims are rejected and the deterministic
   template draft is produced instead (shown in the UI as a fallback). Without keys,
   template-only drafting remains the default.

@@ -177,3 +177,22 @@ def test_live_groq_proposal_is_grounded():
     proposal = make_groq_client(settings.groq_api_key).propose(CTX, _evidence())
     assert proposal.text.strip()
     assert proposal.claims  # the model was asked for claim refs
+
+
+@pytest.mark.live
+def test_live_mistral_proposal_is_grounded():
+    from src.config import get_settings
+
+    settings = get_settings()  # reads .env — Settings(_env_file=None) would ignore it
+    if not settings.mistral_api_key:
+        pytest.skip("no MISTRAL_API_KEY in .env")
+    from src.integrations.llm_client import LLMError, make_mistral_client
+
+    try:
+        proposal = make_mistral_client(settings.mistral_api_key).propose(CTX, _evidence())
+    except LLMError as err:
+        if "429" in str(err):
+            pytest.skip(f"mistral free tier rate-limited right now ({err}) — key itself is valid")
+        raise
+    assert proposal.text.strip()
+    assert proposal.claims
