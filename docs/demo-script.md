@@ -35,6 +35,7 @@ Both are honest; live discovery is stronger evidence.
 ### Segment 4 — Draft, approval, and the gate (2:50–4:00) — tab 2, same candidate
 - Draft generator select: pick **groq** (if key configured) → generate → show the AI draft's grounded-claims caption; then pick **template** → generate → same contract, plainer phrasing. Narration: "Both generators satisfy the same contract — every claim is a verbatim quote of stored evidence; an invented claim is rejected automatically."
 - Edit one word in the text area → **Save edit** → **Approve this text**.
+- **[LIVE — the money shot]** with `dev_test` mode (allowlist = own account): **Send approved draft now** → green *"Sent — message id"*. Narration: "A real DM, delivered through the gate, to my own account — then the approval is consumed and a second send is refused." The Outreach tab shows the attempt with its message id.
 - Eligibility panel, mode `operator_approved` → **Evaluate**: **DENIED — per-message operator approval** (before approving, if order allows) → approve → **ALLOWED**, all checks green.
 - Then click **Mark opted out** → evaluate again → **DENIED — opt-out suppression**.
 - Narration: "Approval binds to exactly this text, for one send. And the gate outranks the UI: an opted-out recipient can never be messaged again — no operator override exists. That's deliberate."

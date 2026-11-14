@@ -146,9 +146,37 @@ def _render_consent_panel(conn, detail) -> None:
                     st.error(str(err))
 
 
+def _reply_client(settings: Settings):
+    """Live polling client when the operator has authorized; fixtures otherwise."""
+    if settings.x_client_id:
+        from src.integrations.x_client import OfficialXClient
+        return OfficialXClient.from_settings(settings)
+    return fixtures.offline_client()
+
+
+def _send_client(settings: Settings):
+    """Live client for DM operations — user-context token from the authorize flow.
+    Missing tokens surface as a clear failed outcome, never a simulated send."""
+    from src.integrations.x_client import OfficialXClient
+    return OfficialXClient.from_settings(settings)
+
+
+def _render_send_outcome(outcome) -> None:
+    if outcome.status == "sent":
+        st.success(f"✅ Sent — message id `{outcome.message_id}` (approval consumed; see the Outreach tab)")
+    elif outcome.status == "unknown":
+        st.error(f"⚠️ UNKNOWN — the API outcome was ambiguous ({outcome.error}). "
+                 "The attempt is flagged for reconciliation; never blind-retry (I7).")
+    elif outcome.status == "failed":
+        st.error(f"❌ Failed — {outcome.error}. Nothing was sent; the attempt is in the attention list.")
+    else:
+        st.warning(f"🚫 DENIED by the gate — {outcome.deny_reason}")
+
+
 def render_outreach_tab(conn, settings: Settings) -> None:
-    data = workflows.load_dashboard(conn)
-    if data.tracking_mode == "manual":
+    tokens_present = workflows.has_user_tokens()
+    data = workflows.load_dashboard(conn, automated_reply_tracking=tokens_present)
+    if not tokens_present:
         st.info(
             "📋 Reply tracking mode: **manual** — replies are recorded by the operator "
             "below. Automated DM-event polling activates only after T07 verifies the "
@@ -196,7 +224,7 @@ def render_outreach_tab(conn, settings: Settings) -> None:
 
     st.markdown(f"**Replies** ({len(data.replies)})")
     if st.button("Pull DM events via API (automated path)"):
-        client = fixtures.offline_client()
+        client = _reply_client(settings)
         result = workflows.ingest_replies(conn, client)
         if isinstance(result, workflows.WorkflowError):
             st.warning(result.message)
@@ -275,7 +303,7 @@ def _render_draft_panel(conn, detail, settings: Settings) -> None:
             workflows.approve_draft(conn, latest["id"])
             st.rerun()
 
-    st.markdown("**Send eligibility gate** — the actual API send lands in T13; this gate is live now.")
+    st.markdown("**Send eligibility gate & controlled send** — every send runs the gate; an approval is consumed by one send (I1).")
     mode = st.radio("Send mode", ["operator_approved", "dev_test", "automated_batch"],
                     key=f"mode_{pid}", horizontal=True,
                     help="operator_approved: one-to-one personalised send after review; "
@@ -289,3 +317,10 @@ def _render_draft_panel(conn, detail, settings: Settings) -> None:
             "result": ["✅" if c.passed else "❌" for c in decision.checks],
             "detail": [c.detail for c in decision.checks],
         })
+
+    consent_state = detail["consent_state"]
+    if consent_state.approved_draft_id is None:
+        st.caption("Send unlocks once you approve the current draft text (I1).")
+    elif st.button("Send approved draft now", key=f"send_{pid}", type="primary"):
+        outcome = workflows.send_approved_draft(conn, _send_client(settings), pid, settings, mode)
+        _render_send_outcome(outcome)

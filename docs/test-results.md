@@ -46,8 +46,8 @@
 | Check | Status |
 |---|---|
 | OAuth 2.0 PKCE authorize + read smoke (`GET /2/users/:id`, 1-result search) | ⏳ T07 |
-| Live discovery run against own account | ⏳ T07/T08 |
-| Controlled send to own/consenting account (one message, operator-approved) | ⏳ T13 |
+| Live discovery run against own account | ✅ PASSED 13 Nov (bearer search + lookup smoke; UI live discovery active) |
+| Controlled send to own/consenting account (one message, operator-approved) | ✅ **PASSED 13 Nov** — real DM delivered to the operator's own account (dev_test mode, self-allowlist, full gate chain), message id recorded; the duplicate second send was denied |
 | Duplicate attempt on a *sent* prospect rejected live | ⏳ T13 |
 | Reply ingestion from real `dm.read` events | ⏳ T14-automated |
 | Clean-machine setup walkthrough timed < 15 min | ⏳ T20 (on a fresh checkout) |

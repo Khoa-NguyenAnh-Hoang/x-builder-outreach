@@ -100,6 +100,8 @@ If a larger allowance is later approved, the original ≈$15 projection still ap
 - `test_live_user_context_me` — **PASSED 13 Nov**: OAuth 2.0 PKCE authorize completed (scopes granted: offline.access, dm.read, users.read, dm.write, tweet.access via tweet.read); `GET /2/users/me` read the authorized account back. Unlocks T13 (controlled send) and automated reply polling (D4 → api).
 - UI live-discovery wired: with credentials present, the Discover tab runs the live client and labels it on screen; without, it falls back to labelled fixtures.
 
+- **Controlled send (T13, 13 Nov)** — **PASSED**: one real DM via `POST /2/dm_conversations/with/{id}/messages` to the operator's own account (dev_test mode, self-allowlist, approved draft, full eligibility gate), delivered with a persisted message id; the immediate duplicate send was refused. Cost: $0.015.
+
 ## 9. Sources (official, checked 11 Nov 2026)
 
 - Pricing: https://docs.x.com/x-api/getting-started/pricing.md

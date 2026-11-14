@@ -182,6 +182,21 @@ def record_manual_reply(conn, prospect_id: int, text: str | None = None):
         return WorkflowError(str(err))
 
 
+def send_approved_draft(conn, client, prospect_id: int, settings: Settings, mode: str):
+    """T13 chain: gate → intent → official send → resolve → consume approval."""
+    from src.services.outreach import send_approved_draft as _send
+    try:
+        return _send(conn, client, prospect_id, settings, mode)
+    except ValueError as err:
+        return WorkflowError(str(err))
+
+
+def has_user_tokens() -> bool:
+    """True when the operator completed the OAuth authorize (automated reply polling active)."""
+    from src.integrations.x_auth import load_tokens
+    return load_tokens() is not None
+
+
 def ingest_replies(conn, client):
     """Pull DM events via the API; on any client failure the manual path stays active."""
     from src.services.conversations import ingest_reply_events
