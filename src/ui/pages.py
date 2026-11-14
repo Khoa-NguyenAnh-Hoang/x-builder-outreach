@@ -126,40 +126,25 @@ def _render_evidence(detail) -> None:
 
 
 def _render_consent_panel(conn, detail) -> None:
-    st.markdown("**Consent & suppression**")
+    st.markdown("**Opt-out & consent status**")
     state: workflows.ConsentState = detail["consent_state"]
     pid = detail["prospect"]["id"]
     badges = {
         "opted_out": "🚫 OPTED OUT" if state.opted_out else "✅ not opted out",
-        "consent": {"none": "consent: none", "pending": "consent: pending verification",
-                    "verified": "consent: verified"}[state.consent],
+        "consent": {"none": "no consent record", "pending": "consent pending verification",
+                    "verified": "consent verified"}[state.consent],
         "approval": (f"approved draft #{state.approved_draft_id}" if state.approved_draft_id
                      else "no approved draft"),
     }
     st.markdown(f"`{badges['opted_out']}` · `{badges['consent']}` · `{badges['approval']}`")
+    st.caption(
+        "Opting out is permanent for this account in the app. Consent records are only "
+        "needed for automated/batch sending — one-to-one approved sends never require one."
+    )
 
-    with st.expander("Consent & suppression controls", expanded=False):
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Mark opted out", key=f"optout_{pid}"):
-                workflows.mark_opt_out(conn, pid)
-                st.rerun()
-        with col2:
-            with st.form(f"consent_{pid}"):
-                source = st.text_input("Consent source (who asked for a DM, where)", key=f"csrc_{pid}")
-                evidence_url = st.text_input("Evidence URL (the public place they said it)", key=f"curl_{pid}")
-                verify_now = st.checkbox("Verify now (operator name required)", key=f"cver_{pid}")
-                verifier = st.text_input("Verified by (operator)", key=f"cverby_{pid}")
-                if st.form_submit_button("Record consent (test/automated sends only)"):
-                    try:
-                        workflows.record_consent(
-                            conn, pid, source=source or "unspecified",
-                            evidence_url=evidence_url or None, scope="manual",
-                            verified_by=verifier if verify_now else None,
-                        )
-                        st.rerun()
-                    except Exception as err:
-                        st.error(str(err))
+    if st.button("Mark opted out", key=f"optout_{pid}"):
+        workflows.mark_opt_out(conn, pid)
+        st.rerun()
 
 
 def _reply_client(settings: Settings):
