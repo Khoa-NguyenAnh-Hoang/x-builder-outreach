@@ -1,34 +1,63 @@
 # GenAI Fund FDE Assignment — One-Page Write-up
 
-**Candidate:** Hoàng Nguyễn Anh Khoa · **Submitted:** 16 November 2026 · **Repo:** `x-builder-outreach` (source + docs; setup in `docs/setup.md`, under 15 minutes)
+**Candidate:** Hoàng Nguyễn Anh Khoa  
+**Repository:** [x-builder-outreach](https://github.com/Khoa-NguyenAnh-Hoang/x-builder-outreach)  
+**Setup:** See `docs/setup.md` (local setup instructions)
 
-## What it is
+## What it does
 
-A local, single-operator prototype that finds AI/robotics builders on X from seeds or narrow topic queries, scores them with a transparent rule-based model whose reasons cite matched evidence, drafts personalised DMs where every personalised claim is a verbatim quote of stored, URL-referenced evidence, gets operator approval per message, and tracks sends and replies. It refuses anything the compliance gate rejects — by design and by test.
+A local, single-operator application for discovering AI and robotics builders on X through seed accounts and focused topic queries. It qualifies candidates using transparent, evidence-backed scoring, generates personalized DM drafts, provides an operator review and approval workflow, and tracks outreach activity and replies.
 
-## Approach
+Personalized factual claims must be traceable to stored, URL-referenced evidence. Unsupported claims are rejected rather than presented as facts.
 
-Python 3.12 + uv, Streamlit UI → service layer → SQLite. All X and LLM access sits behind frozen interfaces with one exception type per documented failure mode. The send-eligibility gate implements policy as code: opt-out suppression is absolute; every send requires per-message operator approval; automated/batch sending additionally requires verified recipient opt-in; volume caps sit inside X's documented limits; duplicate sends are blocked at the database level — a `sent` attempt is active forever. Ambiguous outcomes are stored as `unknown` and flagged for reconciliation; the system never blind-retries. Only official API endpoints; no scraping or browser automation.
+## Technical approach
 
-## Trade-offs
+Built with Python 3.12, `uv`, Streamlit, and SQLite. X API and LLM integrations are isolated behind service interfaces to keep external dependencies replaceable and testable.
 
-- **AI drafting behind a hard verification contract**: drafts come from Groq's free tier (user-approved, $0) or a deterministic template. Both satisfy the same claim-to-evidence contract — a hallucinated claim is rejected at generation and the template draft is produced instead. An LLM cannot write a claim the evidence doesn't back.
-- **Narrow discovery over broad crawling**: bounded pages, capped queries — reliability over coverage, per the brief's preference.
-- **Local SQLite over hosting**: zero-cost, keeps credentials off the network.
-- **Labelled fixtures over fake live claims**: offline mode is announced on screen; the test report separates mocked from live evidence.
+The application includes:
+- Bounded discovery with candidate deduplication.
+- Explainable qualification scores and stored supporting evidence.
+- AI-assisted drafting through Groq's free tier, with a deterministic template fallback.
+- Human review and approval before sending.
+- Consent and opt-out safeguards, duplicate-send prevention, and configurable sending limits.
+- Persistent outreach records, failure states, and reply tracking.
+
+Sending is restricted to permitted, explicitly authorized test scenarios. The prototype uses official X API access and does not scrape X or automate its website.
+
+## Engineering trade-offs
+
+- **Evidence over unrestricted generation:** AI-generated drafts are validated against stored evidence. Unsupported factual claims are rejected, with template drafting as a fallback.
+- **Focused discovery over broad crawling:** bounded queries and pagination prioritize relevant candidates and predictable API usage.
+- **SQLite over hosted infrastructure:** local persistence keeps deployment simple and avoids hosting costs.
+- **Explicit offline mode:** fixture-based operation supports evaluation without credentials, while clearly distinguishing fixture data from live API results.
+- **Reliability over automatic retries:** ambiguous send outcomes are recorded as `unknown` for reconciliation rather than blindly retried.
 
 ## Verification
 
-`uv run pytest` — 136 tests covering every compliance invariant: opt-out supremacy, approval consumption, concurrency dedup, volume caps, fabricated-claim rejection. `ruff` clean. The default suite is fully mocked — no network. Live tests are opt-in via a dedicated marker. **Live status at submission: OAuth 2.0 + live read smoke verified against the real API on 13 November (search, user lookup, /users/me); live discovery runs in the UI; one controlled DM delivered to my own account through the full gate chain with its message id recorded; no message was ever sent to an unconsenting account.**
+The test suite contains **136 tests**, covering core application behavior and safeguards including opt-out handling, approval requirements, duplicate-send prevention, concurrency, sending limits, and unsupported-claim rejection. The default test suite uses mocked integrations; live API tests are opt-in. Ruff checks pass.
+
+**Live verification performed:**
+- OAuth 2.0 authentication and read-only API smoke tests on 13 November 2026, including search, user lookup, and `/users/me`.
+- Live discovery through the application.
+- One controlled DM successfully delivered to my own X account through the application's approval and sending workflow, with the returned message ID recorded.
+- No messages were sent to unconsenting accounts.
 
 ## Costs
 
-X API is pay-per-use credits. **Cash spend: $5** (card + first purchase); X's promotion added a small percentage bonus (5% at this tier). Credit balance ≈ **$5.25**; the demo budget was sized to it (≈ $3.90). The app cannot spend beyond its caps. No other paid tools.
+- **X API:** $5 paid credit purchase plus $5 promotional credit.
+- **Reported remaining balance:** approximately $8.23, implying approximately $1.77 in credit consumption at the time of reporting.
+- **LLM:** Groq free tier; no paid model usage.
+- **Hosting:** none; the application runs locally.
+- **Other paid tools:** none.
 
-## How AI tools were used, and how their output was checked
+The application enforces its own usage limits to keep API consumption controlled.
 
-The initial execution roadmap was drafted with ChatGPT, then verified line-by-line against the assignment brief by an AI agent (ZCode CLI / GLM), which caught two deliverable-breaking defects: a compliance gate that would have made the tool unusable for the fund's core outreach task, and a time budget that exceeded the calendar. The implementation was written by the same agent under my direction in reviewed batches; my loop: batch reports traced acceptance criteria to named tests, suite plus lint re-run at every step, manual review of gate semantics — including a test that caught a bug which would have silently cleared opt-outs. Live AI drafting is verified the same way: the model's output passes the same claim contract as the templates, or it is rejected.
+## AI tools and verification
 
-## What comes next
+ChatGPT was used to develop the initial execution roadmap. ZCode CLI (GLM) assisted with implementation under my direction.
 
-Automated reply polling at scale; LLM phrasing iteration; Southeast-Asia weighting in qualification; retry/backoff on rate limits; then hosted-service hardening.
+I reviewed implementation batches against acceptance criteria, inspected the resulting code, and reran tests and lint checks throughout development. I also manually reviewed compliance-gate behavior; testing caught an issue that could have incorrectly cleared an opt-out. AI-generated message content is subject to the same evidence-validation contract as template-generated content.
+
+## Limitations and next steps
+
+Further work could improve reply polling, qualification for Southeast Asian AI/robotics communities, rate-limit recovery, message-quality evaluation, and hosted deployment hardening.
