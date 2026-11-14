@@ -10,7 +10,7 @@ from src.integrations.x_client import Post, Profile
 
 OFFLINE_NOTE = (
     "⚠️ OFFLINE TEST CLIENT — discovery below runs on fixture data (FakeXClient), "
-    "not the live X API. Live discovery unlocks in T07 once the Developer Console GO lands."
+    "not the live X API. Live discovery activates once credentials are configured in `.env`."
 )
 
 

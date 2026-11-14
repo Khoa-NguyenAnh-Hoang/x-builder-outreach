@@ -77,7 +77,7 @@ def record_consent(conn: sqlite3.Connection, prospect_id: int, source: str,
     existing = _existing(conn, prospect_id)
     if existing and existing["opted_out_at"]:
         raise OptedOutLockedError(
-            "recipient is opted out — consent records cannot override suppression (I2)"
+            "recipient is opted out — consent records cannot override suppression"
         )
     return store.upsert_consent(conn, ConsentRecord(
         prospect_id=prospect_id,
@@ -93,7 +93,7 @@ def record_consent(conn: sqlite3.Connection, prospect_id: int, source: str,
 def verify_consent(conn: sqlite3.Connection, prospect_id: int, verified_by: str) -> int:
     existing = _existing(conn, prospect_id)
     if existing and existing["opted_out_at"]:
-        raise OptedOutLockedError("recipient is opted out (I2)")
+        raise OptedOutLockedError("recipient is opted out — suppression cannot be overridden")
     if existing is None:
         raise ValueError("no consent record to verify — record consent first")
     return store.upsert_consent(conn, ConsentRecord(

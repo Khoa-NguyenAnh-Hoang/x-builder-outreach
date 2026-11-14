@@ -30,11 +30,11 @@ if missing:
         "Offline fixture discovery stays usable meanwhile."
     )
 else:
-    st.success("Credentials configured. Live API checks arrive in T07; sending in T13.")
+    st.success("Credentials configured — live discovery, drafting and gated sending are active.")
 
 st.caption(
-    f"Send caps: {settings.send_cap_15min}/15 min · {settings.send_cap_24h}/24 h (policy I5) · "
-    f"test allowlist: {sorted(settings.test_allowlist_ids()) or 'empty'} (policy I4)"
+    f"Send caps: {settings.send_cap_15min} per 15 min · {settings.send_cap_24h} per 24 h · "
+    f"test-sender allowlist: {sorted(settings.test_allowlist_ids()) or 'empty'}"
 )
 
 tab_discover, tab_candidates, tab_outreach = st.tabs(

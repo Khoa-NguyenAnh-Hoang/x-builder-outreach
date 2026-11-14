@@ -16,7 +16,7 @@ def _discovery_client(settings: Settings):
         from src.integrations.x_client import OfficialXClient
         st.success(
             "🟢 LIVE discovery — real X API data (app-only reads, spend capped by policy). "
-            "Sending stays gated until T13."
+            "Sending is gated: every message needs operator approval."
         )
         return OfficialXClient.from_settings(settings), True
     st.warning(fixtures.OFFLINE_NOTE)
@@ -126,7 +126,7 @@ def _render_evidence(detail) -> None:
 
 
 def _render_consent_panel(conn, detail) -> None:
-    st.markdown("**Consent & suppression** (policy I2/I3/I4)")
+    st.markdown("**Consent & suppression**")
     state: workflows.ConsentState = detail["consent_state"]
     pid = detail["prospect"]["id"]
     badges = {
@@ -138,26 +138,28 @@ def _render_consent_panel(conn, detail) -> None:
     }
     st.markdown(f"`{badges['opted_out']}` · `{badges['consent']}` · `{badges['approval']}`")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Mark opted out", key=f"optout_{pid}"):
-            workflows.mark_opt_out(conn, pid)
-            st.rerun()
-    with col2, st.form(f"consent_{pid}"):
-            source = st.text_input("Consent source (who asked for a DM, where)", key=f"csrc_{pid}")
-            evidence_url = st.text_input("Evidence URL (the public place they said it)", key=f"curl_{pid}")
-            verify_now = st.checkbox("Verify now (operator name required)", key=f"cver_{pid}")
-            verifier = st.text_input("Verified by (operator)", key=f"cverby_{pid}")
-            if st.form_submit_button("Record consent (test/automated sends only)"):
-                try:
-                    workflows.record_consent(
-                        conn, pid, source=source or "unspecified",
-                        evidence_url=evidence_url or None, scope="manual",
-                        verified_by=verifier if verify_now else None,
-                    )
-                    st.rerun()
-                except Exception as err:
-                    st.error(str(err))
+    with st.expander("Consent & suppression controls", expanded=False):
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Mark opted out", key=f"optout_{pid}"):
+                workflows.mark_opt_out(conn, pid)
+                st.rerun()
+        with col2:
+            with st.form(f"consent_{pid}"):
+                source = st.text_input("Consent source (who asked for a DM, where)", key=f"csrc_{pid}")
+                evidence_url = st.text_input("Evidence URL (the public place they said it)", key=f"curl_{pid}")
+                verify_now = st.checkbox("Verify now (operator name required)", key=f"cver_{pid}")
+                verifier = st.text_input("Verified by (operator)", key=f"cverby_{pid}")
+                if st.form_submit_button("Record consent (test/automated sends only)"):
+                    try:
+                        workflows.record_consent(
+                            conn, pid, source=source or "unspecified",
+                            evidence_url=evidence_url or None, scope="manual",
+                            verified_by=verifier if verify_now else None,
+                        )
+                        st.rerun()
+                    except Exception as err:
+                        st.error(str(err))
 
 
 def _reply_client(settings: Settings):
@@ -180,7 +182,7 @@ def _render_send_outcome(outcome) -> None:
         st.success(f"✅ Sent — message id `{outcome.message_id}` (approval consumed; see the Outreach tab)")
     elif outcome.status == "unknown":
         st.error(f"⚠️ UNKNOWN — the API outcome was ambiguous ({outcome.error}). "
-                 "The attempt is flagged for reconciliation; never blind-retry (I7).")
+                 "The attempt is flagged for reconciliation; never blind-retry.")
     elif outcome.status == "failed":
         st.error(f"❌ Failed — {outcome.error}. Nothing was sent; the attempt is in the attention list.")
     else:
@@ -193,8 +195,8 @@ def render_outreach_tab(conn, settings: Settings) -> None:
     if not tokens_present:
         st.info(
             "📋 Reply tracking mode: **manual** — replies are recorded by the operator "
-            "below. Automated DM-event polling activates only after T07 verifies the "
-            "`dm.read` entitlement (decision D4). This is not real-time monitoring."
+            "below. Automated polling activates once the account is authorized. "
+            "This is not real-time monitoring."
         )
 
     cols = st.columns(5)
@@ -213,7 +215,7 @@ def render_outreach_tab(conn, settings: Settings) -> None:
             st.error(
                 f"⚠️ Attempt #{a.attempt_id} to @{a.username or a.x_user_id} is **unknown** — "
                 "the API outcome was ambiguous. Reconcile against the official account before "
-                "any retry (invariant I7: never blind-retry)."
+                "sending again."
             )
         else:
             st.warning(
@@ -234,7 +236,7 @@ def render_outreach_tab(conn, settings: Settings) -> None:
             "deny reason": [a.deny_reason or "—" for a in data.recent_attempts],
         })
     else:
-        st.info("No outreach attempts yet — sending arrives in T13; denials are recorded from the eligibility gate.")
+        st.info("No outreach attempts yet — approved sends and gate denials appear here.")
 
     st.markdown(f"**Replies** ({len(data.replies)})")
     if st.button("Pull DM events via API (automated path)"):
@@ -272,7 +274,7 @@ def render_outreach_tab(conn, settings: Settings) -> None:
 
 
 def _render_draft_panel(conn, detail, settings: Settings) -> None:
-    st.markdown("**Draft review & approval** (policy I1 — approval binds to the text as shown)")
+    st.markdown("**Draft review & approval** — approval binds to the text as shown")
     pid = detail["prospect"]["id"]
     drafts = detail["drafts"]
 
@@ -317,7 +319,7 @@ def _render_draft_panel(conn, detail, settings: Settings) -> None:
             workflows.approve_draft(conn, latest["id"])
             st.rerun()
 
-    st.markdown("**Send eligibility gate & controlled send** — every send runs the gate; an approval is consumed by one send (I1).")
+    st.markdown("**Send eligibility gate & controlled send** — every send runs the gate; an approval is used by one send.")
     mode = st.radio("Send mode", ["operator_approved", "dev_test", "automated_batch"],
                     key=f"mode_{pid}", horizontal=True,
                     help="operator_approved: one-to-one personalised send after review; "
@@ -327,14 +329,13 @@ def _render_draft_panel(conn, detail, settings: Settings) -> None:
         (st.success if decision.allowed else st.error)(f"{'ALLOWED' if decision.allowed else 'DENIED'} — {decision.reason}")
         st.table({
             "check": [c.name for c in decision.checks],
-            "invariant": [c.invariant for c in decision.checks],
             "result": ["✅" if c.passed else "❌" for c in decision.checks],
             "detail": [c.detail for c in decision.checks],
         })
 
     consent_state = detail["consent_state"]
     if consent_state.approved_draft_id is None:
-        st.caption("Send unlocks once you approve the current draft text (I1).")
+        st.caption("Send unlocks once you approve the current draft text.")
     elif st.button("Send approved draft now", key=f"send_{pid}", type="primary"):
         outcome = workflows.send_approved_draft(conn, _send_client(settings), pid, settings, mode)
         _render_send_outcome(outcome)
