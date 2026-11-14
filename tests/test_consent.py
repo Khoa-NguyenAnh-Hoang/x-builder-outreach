@@ -67,7 +67,7 @@ def test_opt_out_is_immediate_and_locks_consent_writes(conn):
     pid = _prospect(conn)
     mark_opt_out(conn, pid)
     assert get_consent_state(conn, pid).opted_out is True
-    with pytest.raises(OptedOutLockedError, match="I2"):
+    with pytest.raises(OptedOutLockedError, match="opted out"):
         record_consent(conn, pid, source="oops")
     with pytest.raises(OptedOutLockedError):
         verify_consent(conn, pid, verified_by="operator")
