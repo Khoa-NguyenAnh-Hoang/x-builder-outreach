@@ -19,8 +19,8 @@ Both are honest; live discovery is stronger evidence.
 - Narration: "This is a working prototype, not a mockup — everything you'll see runs locally: Streamlit UI, services layer, SQLite. Let's start by proving the code is real."
 
 ### Segment 1 — Proof of life (0:20–0:50) — terminal
-- Show: `uv sync` finishes → `uv run pytest` → **99 passed** → `uv run ruff check src tests` → clean.
-- Narration: "99 tests, all passing. Every one runs on deterministic fakes — no network, no real messages. Live API tests are opt-in only and none are needed for what you're about to see."
+- Show: `uv sync` finishes → `uv run pytest` → **136 passed** → `uv run ruff check src tests` → clean.
+- Narration: "136 tests, all passing. Every one runs on deterministic fakes — no network, no real messages. Live API tests are opt-in only and none are needed for what you're about to see."
 
 ### Segment 2 — Discovery (0:50–1:50) — app, tab 1 **[LIVE] or [FIXTURE]**
 - App boots. **Keep the offline warning banner on screen** (fixture variant) — point at it: "This label is deliberate: fixture data is always announced, never passed off as live."
