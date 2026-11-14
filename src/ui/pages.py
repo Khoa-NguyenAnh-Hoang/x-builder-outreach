@@ -26,14 +26,28 @@ def _discovery_client(settings: Settings):
 def render_discover_tab(conn, settings: Settings) -> None:
     client, _live = _discovery_client(settings)
 
+    mode = st.radio(
+        "Discovery mode",
+        ["Seeds only (no search — zero cost)", "Seeds + topic queries (search spends credits)"],
+        horizontal=True, key="discovery_mode",
+        help="Seed-only looks up exactly the accounts you list. Topic queries run paid "
+             "recent searches: each query page ≈ 100 posts × $0.005 = $0.50.")
+    seed_only = mode.startswith("Seeds only")
+
     with st.form("discover_form"):
-        seeds = st.text_input("Seed usernames (comma-separated)", placeholder="fixture_robo, fixture_llmdev")
-        queries = st.text_input("Topic queries (comma-separated)", placeholder="humanoid robots founders")
+        seeds = st.text_input("Seed usernames (comma-separated)", placeholder="Oahkvrg")
+        queries = st.text_input(
+            "Topic queries (comma-separated)", placeholder="humanoid robots founders",
+            disabled=seed_only)
         max_pages = st.number_input("Max pages per query (1–3, deliberately narrow)", 1, 3, 1)
+        if not seed_only:
+            st.caption(f"Estimated search cost: ≈ ${0.5 * max_pages:.2f} per query "
+                       "(100 posts × $0.005; same post within 24 h bills once)")
         run = st.form_submit_button("Run discovery", use_container_width=True)
 
     if run:
-        result = workflows.run_discovery_workflow(conn, client, seeds, queries, int(max_pages))
+        effective_queries = "" if seed_only else queries
+        result = workflows.run_discovery_workflow(conn, client, seeds, effective_queries, int(max_pages))
         if isinstance(result, workflows.WorkflowError):
             st.error(result.message)
         else:
