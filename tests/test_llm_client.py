@@ -169,7 +169,9 @@ def workflows_llm_providers(settings):
 
 @pytest.mark.live
 def test_live_groq_proposal_is_grounded():
-    settings = Settings(_env_file=None)
+    from src.config import get_settings
+
+    settings = get_settings()  # reads .env — Settings(_env_file=None) would ignore it
     if not settings.groq_api_key:
         pytest.skip("no GROQ_API_KEY in .env")
     proposal = make_groq_client(settings.groq_api_key).propose(CTX, _evidence())

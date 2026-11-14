@@ -101,9 +101,10 @@ SYSTEM_PROMPT = (
     "Ground every personalisation in the numbered evidence provided. "
     'Respond with strict JSON only: {"text": string, "claims": '
     '[{"evidence_id": int, "claim_text": string}]}. '
-    "Each claim_text must be an exact contiguous snippet copied from the evidence item "
-    "with that id and must appear word-for-word in text. Never invent facts, achievements, "
-    "metrics, or shared history. No markdown, no code fences."
+    "Each claim_text must be an exact contiguous snippet of the evidence text itself — "
+    "never include the evidence number, the word 'Evidence', or the source label — and "
+    "must appear word-for-word in text. Never invent facts, achievements, metrics, or "
+    "shared history. No markdown, no code fences."
 )
 
 USER_INSTRUCTIONS = (
@@ -142,7 +143,7 @@ class OpenAICompatLLMClient:
                     f"{self._base_url}/chat/completions",
                     headers={"Authorization": f"Bearer {self._api_key}"},
                     json={"model": self._model, "messages": messages,
-                          "temperature": 0.7, "max_tokens": 600},
+                          "temperature": 0.7, "max_tokens": 2000},
                 )
         except httpx.TimeoutException as err:
             raise LLMError(f"{self.name} timeout: {err}") from err
