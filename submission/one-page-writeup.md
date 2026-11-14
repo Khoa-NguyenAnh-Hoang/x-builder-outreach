@@ -1,6 +1,6 @@
 # GenAI Fund FDE Assignment — One-Page Write-up
 
-**Candidate:** Khoa Nguyen Anh Hoang · **Submitted:** 16 November 2026 · **Repo:** `x-builder-outreach` (source + docs; setup in `docs/setup.md`, under 15 minutes)
+**Candidate:** Hoàng Nguyễn Anh Khoa · **Submitted:** 16 November 2026 · **Repo:** `x-builder-outreach` (source + docs; setup in `docs/setup.md`, under 15 minutes)
 
 ## What it is
 

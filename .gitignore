@@ -23,3 +23,6 @@ Thumbs.db
 
 # Local app data
 /data/
+
+# Demo video travels with the submission email, not git (5 MB binary)
+submission/demo.mp4
