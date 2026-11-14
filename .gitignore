@@ -26,3 +26,6 @@ Thumbs.db
 
 # Demo video travels with the submission email, not git (5 MB binary)
 submission/demo.mp4
+
+# Submission-local artifacts (delivered by email, not git)
+submission/email-draft.md

@@ -50,7 +50,7 @@
 | Controlled send to own/consenting account (one message, operator-approved) | ✅ **PASSED 13 Nov** — real DM delivered to the operator's own account (dev_test mode, self-allowlist, full gate chain), message id recorded; the duplicate second send was denied |
 | Duplicate attempt on a *sent* prospect rejected live | ✅ PASSED 13 Nov — the immediate duplicate send in the live chain was denied |
 | Reply ingestion from real `dm.read` events | ✅ wired live (polling active in the UI); awaiting a real inbound reply to demonstrate end-to-end |
-| Clean-machine setup walkthrough timed < 15 min | ⏳ T20 (fresh checkout, run at audit) |
+| Clean-machine setup walkthrough timed < 15 min | ✅ **PASSED 14 Nov** — fresh GitHub clone: `uv sync` 5 s + 136 tests 13 s + lint/packaging 3 s = **21 s total** (budget 900 s); app health endpoint ok |
 
 ## Not yet verified (honesty list)
 
